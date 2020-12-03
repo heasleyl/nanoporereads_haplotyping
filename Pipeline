@@ -1,0 +1,17 @@
+*This uses the program Longshot: https://github.com/pjedge/longshot :: 'Longshot is a variant calling tool for diploid genomes using long error prone reads such as Pacific Biosciences (PacBio) SMRT and Oxford Nanopore Technologies (ONT). It takes as input an aligned BAM file and outputs a phased VCF file with variants and haplotype information. It can also genotype and phase input VCF files. It can output haplotype-separated BAM files that can be used for downstream analysis. Currently, it only calls single nucleotide variants (SNVs), but it can genotype indels if they are given in an input VCF.'*
+
+Requirements:
+1. A .bam file of the nanopore reads of interest mapped onto a reference genome
+2. A fasta (.fa) file of the reference genome. This cannot be compressed.
+3. A .fai index file of the reference genome. This is made using samtools faidx <reference.fa> function in samtools.
+
+It is worth revisiting the original longshot github page, but for the line below we are asking the program to do several things:
+1. -A asks the program to use the mean read depth to optimize how the program will call variants.
+2. -O ask the program to make a new BAM file in which all the reads have been tagged with a HP tag designating their haplotype assigment (HP:i:1, HP:i:2)
+3. Using the given bam file (-bam) and the reference genome (--ref), make an output variant detection file (--out). This .vcf file should be full of SNPs
+
+longshot -A —O <haplotype tagged bam file> -—bam <long reads aligned to reference> --ref <reference genome> --out <output VCF file>
+
+At the end of this function, there will be new files in the folder where you did this: a) the new haplotype-tagged file, and a new output VCF file.
+The next step here will be to recover the read files and separate them by HP tag so that we can have separated groups of reads for the  HP:i:1  reads, the HP:i:2 reads and the non-tagged reads that consitute homozygous regions of the genome. From there, we will do CANU assemblies of each type.
+
